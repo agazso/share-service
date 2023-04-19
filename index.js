@@ -53,6 +53,11 @@ function addItem(item) {
   const sha256 = crypto.createHash('sha256')
   const hash = sha256.update(item).digest('hex')
 
+  if (items[hash]) {
+    items[hash] = item
+    return hash
+  }
+
   if (hashes.length >= MAX_NUM_ITEMS) {
     delete items[hashes[0]]
     hashes.shift()
