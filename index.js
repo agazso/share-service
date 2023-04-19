@@ -22,7 +22,7 @@ app.use(function(req, res, next) {
 const hashes = []
 const items = {}
 
-app.post('/api/v1/item', (req, res) => {
+app.post(['/api/v1/item', '/bzz:/'], (req, res) => {
   try {
     const body = req.body
     const hash = addItem(body)
@@ -34,7 +34,7 @@ app.post('/api/v1/item', (req, res) => {
   }
 });
 
-app.get('/api/v1/item/:hash', (req, res) => {
+app.get(['/api/v1/item/:hash', '/bzz:/:hash'], (req, res) => {
   const item = items[req.params.hash]
   if (item) {
     res.status(200).send(item)
