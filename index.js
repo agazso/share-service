@@ -10,7 +10,7 @@ const MAX_NUM_ITEMS = 1024
 
 const app = express();
 app.use(bodyParser.text({
-    type: 'text/plain',
+    type: ['text/plain', 'application/felfele-feeds+json'],
 }));
 
 app.use(function(req, res, next) {
