@@ -26,19 +26,22 @@ app.post(['/api/v1/item', '/bzz:/'], (req, res) => {
   try {
     const body = req.body
     const hash = addItem(body)
-    console.log(hash)
+    console.log(`200 POST ${hash}`)
     res.status(200).send(hash)
   } catch (e) {
-    console.error(e)
+    console.error(`500 POST ${e}`)
     res.status(500).send(e);
   }
 });
 
 app.get(['/api/v1/item/:hash', '/bzz:/:hash'], (req, res) => {
-  const item = items[req.params.hash]
+  const hash = req.params.hash
+  const item = items[hash]
   if (item) {
+    console.log(`200 GET ${hash}`)
     res.status(200).send(item)
   } else {
+    console.log(`404 GET ${hash}`)
     res.status(404).send('Not Found')
   }
 })
