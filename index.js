@@ -25,8 +25,9 @@ const items = {}
 app.post(['/api/v1/item', '/bzz:/'], (req, res) => {
   try {
     const body = req.body
-    const hash = addItem(body)
-    console.log(`200 POST ${hash}`)
+    const contentType = req.get('Content-Type') || 'text/plain'
+    const hash = addItem(body, contentType)
+    console.log(`200 POST ${contentType} ${hash}`)
     res.status(200).send(hash)
   } catch (e) {
     console.error(`500 POST ${e}`)
@@ -39,7 +40,7 @@ app.get(['/api/v1/item/:hash', '/bzz:/:hash'], (req, res) => {
   const item = items[hash]
   if (item) {
     console.log(`200 GET ${hash}`)
-    res.status(200).send(item)
+    res.status(200).append('Content-Type', item.contentType).send(item.payload)
   } else {
     console.log(`404 GET ${hash}`)
     res.status(404).send('Not Found')
@@ -48,13 +49,17 @@ app.get(['/api/v1/item/:hash', '/bzz:/:hash'], (req, res) => {
 
 app.listen(LISTEN_PORT, LISTEN_HOST, () => console.log('listening on port ' + LISTEN_PORT));
 
-function addItem(item) {
-  if (item.length >= MAX_PAYLOAD_SIZE) {
+function addItem(payload, contentType) {
+  if (payload.length >= MAX_PAYLOAD_SIZE) {
     throw new Error('payload exceeds maximum size')
   }
 
   const sha256 = crypto.createHash('sha256')
-  const hash = sha256.update(item).digest('hex')
+  const hash = sha256.update(payload).digest('hex')
+  const item = {
+    payload,
+    contentType,
+  }
 
   if (items[hash]) {
     items[hash] = item
